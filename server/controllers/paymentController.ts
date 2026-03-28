@@ -3,12 +3,30 @@ import Order from "../models/Order.js";
 import Cart from "../models/Cart.js";
 import { Request, Response } from "express";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+// Initialize Stripe only if valid secret key is provided
+let stripe: Stripe | null = null;
+
+if (process.env.STRIPE_SECRET_KEY && 
+    process.env.STRIPE_SECRET_KEY !== '_______stripe_secret_key_______' &&
+    !process.env.STRIPE_SECRET_KEY.includes('_______')) {
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    console.log('✅ Stripe initialized successfully');
+} else {
+    console.log('⚠️ Stripe is disabled: No valid secret key provided');
+}
 
 // Create Checkout Session
 // POST /api/payment/checkout
 export const createCheckoutSession = async (req: Request, res: Response) => {
     try {
+        // Check if Stripe is available
+        if (!stripe) {
+            return res.status(400).json({ 
+                error: 'Stripe payments are not configured. Please add STRIPE_SECRET_KEY to environment variables.',
+                success: false 
+            });
+        }
+
         const { items, shipping, success_url, cancel_url, orderId } = req.body;
 
         const lineItems = items.map((item: any) => ({
@@ -59,71 +77,89 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
 // Handle Stripe Webhook
 // POST /api/stripe
 export const handleStripeWebhook = async (req: Request, res: Response) => {
-    const sig = req.headers["stripe-signature"];
-    const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
-    let event;
-
     try {
-        event = stripe.webhooks.constructEvent(req.body, sig as string, endpointSecret as string);
-    } catch (err: any) {
-        console.error(`Webhook Error: ${err.message}`);
-        return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
-
-    const { orderId, appId } = (event.data.object as any).metadata;
-
-    if (appId !== "forever-app") {
-        return res.status(400).send("Invalid app id");
-    }
-
-    // Handle the event
-    try {
-        switch (event.type) {
-            case "payment_intent.succeeded":
-                let order;
-
-                if (orderId) {
-                    order = await Order.findById(orderId);
-                } else {
-                    order = await Order.findOne({ paymentIntentId: event.data.object.id });
-                }
-
-                if (order) {
-                    order.paymentStatus = "paid";
-                    order.paymentMethod = "stripe";
-                    if (!order.paymentIntentId) {
-                        order.paymentIntentId = event.data.object.id;
-                    }
-                    await order.save();
-
-                    // Clear User Cart
-                    const cart = await Cart.findOne({ user: order.user });
-                    if (cart) {
-                        cart.items = [];
-                        cart.totalAmount = 0;
-                        await cart.save();
-                    }
-                } else {
-                    console.warn(`Order not found for PaymentIntent ${event.data.object.id}`);
-                }
-                break;
-
-            case "payment_intent.canceled":
-                await Order.findByIdAndUpdate(orderId, { paymentStatus: "failed", orderStatus: "cancelled" });
-                break;
-
-            case "payment_intent.payment_failed":
-                await Order.findByIdAndUpdate(orderId, { paymentStatus: "failed", orderStatus: "cancelled" });
-                break;
-
-            default:
-                console.log(`Unhandled event type ${event.type}`);
+        // Check if Stripe is available
+        if (!stripe) {
+            return res.status(400).json({ 
+                error: 'Stripe webhooks are not configured',
+                success: false 
+            });
         }
 
-        res.send({ success: true });
-    } catch (err: any) {
-        console.error(`Webhook Processing Error: ${err.message}`);
-        res.status(500).send(`Webhook Processing Error: ${err.message}`);
+        const sig = req.headers["stripe-signature"];
+        const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+        if (!endpointSecret || endpointSecret === '_______stripe_webhook_secret_______') {
+            console.warn('⚠️ Stripe webhook secret not configured');
+            return res.status(400).json({ error: 'Webhook secret not configured' });
+        }
+
+        let event;
+
+        try {
+            event = stripe.webhooks.constructEvent(req.body, sig as string, endpointSecret as string);
+        } catch (err: any) {
+            console.error(`Webhook Error: ${err.message}`);
+            return res.status(400).send(`Webhook Error: ${err.message}`);
+        }
+
+        const { orderId, appId } = (event.data.object as any).metadata;
+
+        if (appId !== "forever-app") {
+            return res.status(400).send("Invalid app id");
+        }
+
+        // Handle the event
+        try {
+            switch (event.type) {
+                case "payment_intent.succeeded":
+                    let order;
+
+                    if (orderId) {
+                        order = await Order.findById(orderId);
+                    } else {
+                        order = await Order.findOne({ paymentIntentId: event.data.object.id });
+                    }
+
+                    if (order) {
+                        order.paymentStatus = "paid";
+                        order.paymentMethod = "stripe";
+                        if (!order.paymentIntentId) {
+                            order.paymentIntentId = event.data.object.id;
+                        }
+                        await order.save();
+
+                        // Clear User Cart
+                        const cart = await Cart.findOne({ user: order.user });
+                        if (cart) {
+                            cart.items = [];
+                            cart.totalAmount = 0;
+                            await cart.save();
+                        }
+                    } else {
+                        console.warn(`Order not found for PaymentIntent ${event.data.object.id}`);
+                    }
+                    break;
+
+                case "payment_intent.canceled":
+                    await Order.findByIdAndUpdate(orderId, { paymentStatus: "failed", orderStatus: "cancelled" });
+                    break;
+
+                case "payment_intent.payment_failed":
+                    await Order.findByIdAndUpdate(orderId, { paymentStatus: "failed", orderStatus: "cancelled" });
+                    break;
+
+                default:
+                    console.log(`Unhandled event type ${event.type}`);
+            }
+
+            res.send({ success: true });
+        } catch (err: any) {
+            console.error(`Webhook Processing Error: ${err.message}`);
+            res.status(500).send(`Webhook Processing Error: ${err.message}`);
+        }
+    } catch (error: any) {
+        console.error(`Webhook Error: ${error.message}`);
+        res.status(500).json({ error: error.message });
     }
 };
