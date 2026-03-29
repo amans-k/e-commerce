@@ -7,18 +7,32 @@ export const clerkWebhook = async (req: Request, res: Response) => {
         const evt: any = await verifyWebhook(req);
 
         if (evt.type === "user.created" || evt.type === "user.updated") {
-            const user = await User.findOne({ clerkId: evt.data.id });
+            const email = evt.data?.email_addresses[0]?.email_address;
+            
+            // Find by either clerkId OR email (to prevent duplicate email)
+            const user = await User.findOne({ 
+                $or: [
+                    { clerkId: evt.data.id },
+                    { email: email }
+                ]
+            });
 
             const userData = {
                 clerkId: evt.data.id,
-                email: evt.data?.email_addresses[0]?.email_address,
-                name: evt.data?.first_name + " " + evt.data?.last_name,
+                email: email,
+                name: `${evt.data?.first_name || ""} ${evt.data?.last_name || ""}`.trim(),
                 image: evt.data?.image_url,
             };
 
             if (user) {
-                await User.findOneAndUpdate({ clerkId: evt.data.id }, userData);
+                // Update existing user (update clerkId if email matched)
+                await User.findOneAndUpdate(
+                    { _id: user._id }, 
+                    userData,
+                    { upsert: false }
+                );
             } else {
+                // Create new user
                 await User.create(userData);
             }
         }
