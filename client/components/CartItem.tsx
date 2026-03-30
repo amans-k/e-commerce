@@ -25,7 +25,7 @@ export default function CartItem({ item, onRemove, onUpdateQuantity }: CartItemP
                 </View>
 
                 <View className="flex-row justify-between items-center mt-2">
-                    <Text className="text-primary font-bold text-base">${item.product.price.toFixed(2)}</Text>
+                    <Text className="text-primary font-bold text-base">₹{item.product.price.toFixed(2)}</Text>
 
                     <View className="flex-row items-center bg-surface rounded-full px-2 py-1">
                         <TouchableOpacity className="p-1" onPress={() => onUpdateQuantity && onUpdateQuantity(item.quantity - 1)}>

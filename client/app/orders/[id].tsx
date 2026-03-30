@@ -100,7 +100,7 @@ export default function OrderDetails() {
                                     <Text className="text-primary font-medium" numberOfLines={1}>{item.name}</Text>
                                     <Text className="text-secondary text-xs">Size: {item.size}</Text>
                                     <View className="flex-row justify-between items-center mt-2">
-                                        <Text className="text-primary font-bold">${item.price}</Text>
+                                        <Text className="text-primary font-bold">₹{item.price}</Text>
                                         <Text className="text-secondary text-xs">Qty: {item.quantity}</Text>
                                     </View>
                                 </View>
@@ -136,20 +136,20 @@ export default function OrderDetails() {
                     <View className="h-px bg-gray-100 my-2" />
                     <View className="flex-row justify-between mb-2">
                         <Text className="text-secondary">Subtotal</Text>
-                        <Text className="text-primary font-medium">${order.subtotal.toFixed(2)}</Text>
+                        <Text className="text-primary font-medium">₹{order.subtotal.toFixed(2)}</Text>
                     </View>
                     <View className="flex-row justify-between mb-2">
                         <Text className="text-secondary">Shipping</Text>
-                        <Text className="text-primary font-medium">${order.shippingCost.toFixed(2)}</Text>
+                        <Text className="text-primary font-medium">₹{order.shippingCost.toFixed(2)}</Text>
                     </View>
                     <View className="flex-row justify-between mb-2">
                         <Text className="text-secondary">Tax</Text>
-                        <Text className="text-primary font-medium">${order.tax.toFixed(2)}</Text>
+                        <Text className="text-primary font-medium">₹{order.tax.toFixed(2)}</Text>
                     </View>
                     <View className="h-px bg-gray-100 my-2" />
                     <View className="flex-row justify-between">
                         <Text className="text-primary font-bold text-lg">Total</Text>
-                        <Text className="text-primary font-bold text-lg">${order.totalAmount.toFixed(2)}</Text>
+                        <Text className="text-primary font-bold text-lg">₹{order.totalAmount.toFixed(2)}</Text>
                     </View>
                 </View>
             </ScrollView>

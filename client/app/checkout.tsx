@@ -26,7 +26,7 @@ export default function Checkout() {
 
     const [paymentMethod, setPaymentMethod] = useState<"cash" | "stripe">("cash");
 
-    const shipping = 2.00;
+    const shipping = 0; // Shipping charge set to 0
     const tax = 0;
     const total = cartTotal + shipping + tax;
 
@@ -287,19 +287,19 @@ export default function Checkout() {
                 <Text className="text-lg font-bold text-primary mb-4">Order Summary</Text>
                 <View className="flex-row justify-between mb-2">
                     <Text className="text-secondary">Subtotal</Text>
-                    <Text className="font-bold">${cartTotal.toFixed(2)}</Text>
+                    <Text className="font-bold">₹{cartTotal.toFixed(2)}</Text>
                 </View>
                 <View className="flex-row justify-between mb-2">
                     <Text className="text-secondary">Shipping</Text>
-                    <Text className="font-bold">${shipping.toFixed(2)}</Text>
+                    <Text className="font-bold">₹{shipping.toFixed(2)}</Text>
                 </View>
                 <View className="flex-row justify-between mb-4">
                     <Text className="text-secondary">Tax</Text>
-                    <Text className="font-bold">${tax.toFixed(2)}</Text>
+                    <Text className="font-bold">₹{tax.toFixed(2)}</Text>
                 </View>
                 <View className="flex-row justify-between mb-6">
                     <Text className="text-xl font-bold text-primary">Total</Text>
-                    <Text className="text-xl font-bold text-primary">${total.toFixed(2)}</Text>
+                    <Text className="text-xl font-bold text-primary">₹{total.toFixed(2)}</Text>
                 </View>
 
                 <TouchableOpacity

@@ -6,7 +6,6 @@ import { COLORS } from "@/constants";
 import type { ProductCardProps } from "@/constants/types";
 import { useWishlist } from "@/context/WishlistContext";
 
-
 export default function ProductCard({ product }: ProductCardProps) {
     const { toggleWishlist, isInWishlist } = useWishlist();
     const isLiked = isInWishlist(product._id);
@@ -36,9 +35,9 @@ export default function ProductCard({ product }: ProductCardProps) {
                         {product.name}
                     </Text>
                     <View className="flex-row items-center">
-                        <Text className="text-primary font-bold text-base">${product.price.toFixed(2)}</Text>
+                        <Text className="text-primary font-bold text-base">₹{product.price.toFixed(2)}</Text>
                         {product.comparePrice && (
-                            <Text className="text-secondary text-xs line-through ml-2">${product.comparePrice.toFixed(2)}</Text>
+                            <Text className="text-secondary text-xs line-through ml-2">₹{product.comparePrice.toFixed(2)}</Text>
                         )}
                     </View>
                 </View>

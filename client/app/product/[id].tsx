@@ -138,7 +138,7 @@ export default function ProductDetails() {
                         </View>
                     </View>
 
-                    <Text className="text-2xl font-bold text-primary mb-6">${product.price.toFixed(2)}</Text>
+                    <Text className="text-2xl font-bold text-primary mb-6">₹{product.price.toFixed(2)}</Text>
 
                     {/* Sizes */}
                     {product.sizes && product.sizes.length > 0 && (

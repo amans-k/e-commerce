@@ -91,8 +91,6 @@ export default function AddProduct() {
 
             if (!data?.success) throw new Error("Upload failed");
 
-            if (!data?.success) throw new Error("Upload failed");
-
             Toast.show({
                 type: 'success',
                 text1: 'Success',
@@ -127,7 +125,7 @@ export default function AddProduct() {
 
                 {/* PRICE */}
                 <Text className="text-secondary text-xs font-bold mb-1 uppercase">
-                    Price ($) *
+                    Price (₹) *
                 </Text>
                 <TextInput
                     className="bg-surface p-3 rounded-lg mb-4 text-primary"

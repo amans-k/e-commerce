@@ -177,7 +177,7 @@ export default function EditProduct() {
                     onChangeText={setName}
                 />
 
-                <Text className="text-secondary text-xs font-bold mb-1 uppercase">Price ($) *</Text>
+                <Text className="text-secondary text-xs font-bold mb-1 uppercase">Price (₹) *</Text>
                 <TextInput
                     className="bg-surface p-3 rounded-lg mb-4 text-primary"
                     keyboardType="decimal-pad"

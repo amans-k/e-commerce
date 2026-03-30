@@ -105,7 +105,7 @@ export default function Orders() {
 
                             <View className="flex-row justify-between items-center mt-2 pt-3 border-t border-gray-100">
                                 <Text className="text-secondary">Items: {item.items.length}</Text>
-                                <Text className="text-primary font-bold text-lg">${item.totalAmount.toFixed(2)}</Text>
+                                <Text className="text-primary font-bold text-lg">₹{item.totalAmount.toFixed(2)}</Text>
                             </View>
                         </TouchableOpacity>
                     )}

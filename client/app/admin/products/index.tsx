@@ -130,7 +130,7 @@ export default function AdminProducts() {
                                 <Text className="text-secondary text-xs mb-1" numberOfLines={1}>Category : {product.category || 'Others'}</Text>
                                 <Text className="text-secondary text-xs mb-1" numberOfLines={1}>Stock : {product.stock}</Text>
                                 <Text className="text-secondary text-xs mb-1" numberOfLines={1}>Sizes : {product.sizes.join(", ")}</Text>
-                                <Text className="text-primary font-bold">${product.price.toFixed(2)}</Text>
+                                <Text className="text-primary font-bold">₹{product.price.toFixed(2)}</Text>
                             </View>
 
                             <View className="flex-row items-center">

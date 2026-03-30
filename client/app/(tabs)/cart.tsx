@@ -10,7 +10,7 @@ export default function Cart() {
     const router = useRouter();
     const { cartItems, cartTotal, removeFromCart, updateQuantity } = useCart();
 
-    const shipping = 2.00;
+    const shipping = 0; // Shipping charge set to 0
     const total = cartTotal + shipping;
 
     return (
@@ -33,16 +33,16 @@ export default function Cart() {
                     <View className="p-4 bg-white rounded-t-3xl shadow-sm">
                         <View className="flex-row justify-between mb-2">
                             <Text className="text-secondary">Subtotal</Text>
-                            <Text className="text-primary font-bold">${cartTotal.toFixed(2)}</Text>
+                            <Text className="text-primary font-bold">₹{cartTotal.toFixed(2)}</Text>
                         </View>
                         <View className="flex-row justify-between mb-4">
                             <Text className="text-secondary">Shipping</Text>
-                            <Text className="text-primary font-bold">${shipping.toFixed(2)}</Text>
+                            <Text className="text-primary font-bold">₹{shipping.toFixed(2)}</Text>
                         </View>
                         <View className="h-[1px] bg-border mb-4" />
                         <View className="flex-row justify-between mb-6">
                             <Text className="text-primary font-bold text-lg">Total</Text>
-                            <Text className="text-primary font-bold text-lg">${total.toFixed(2)}</Text>
+                            <Text className="text-primary font-bold text-lg">₹{total.toFixed(2)}</Text>
                         </View>
 
                         <TouchableOpacity className="bg-primary py-4 rounded-full items-center" onPress={() => router.push("/checkout")} >
